@@ -36,8 +36,9 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
         width, height = factor * vsk.width, factor * vsk.height
 
         points = [Point(vsk.random(width), vsk.random(height)) for _ in range(self.num_points)]
-        center = Point(sum([p.x for p in points])/len(points), sum([p.y for p in points])/len(points))
-
+        # center = Point(sum([p.x for p in points])/len(points), sum([p.y for p in points])/len(points))
+        center = Point(width/2,height/2)
+        
         points.sort(key=lambda p : to_polar(center, p)[::-1])
         draw_path(vsk, points, self.closed)
 
