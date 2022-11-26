@@ -11,7 +11,10 @@ def draw_path(vsk:vsketch.Vsketch, points, closed):
     if len(points) < 2:
         return
     p0 = points[0]
+    i = 1
     for p in points[1:]:
+        vsk.strokeWeight(i)
+        i += 1
         vsk.line(p0.x,p0.y, p.x,p.y)
         p0 = p
     if closed:
@@ -20,6 +23,7 @@ def draw_path(vsk:vsketch.Vsketch, points, closed):
 def to_polar(center, p):
     r = center.distance(p)
     theta = math.acos((p.x-center.x)/r)
+    print(p, r, theta)
     return (r, theta)
 
 class ChaikinCurvesSketch(vsketch.SketchClass):
@@ -38,8 +42,10 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
         points = [Point(vsk.random(width), vsk.random(height)) for _ in range(self.num_points)]
         # center = Point(sum([p.x for p in points])/len(points), sum([p.y for p in points])/len(points))
         center = Point(width/2,height/2)
-        
+        # vsk.circle(center.x,center.y, 20)
+        print([(p.x, p.y) for p in points])
         points.sort(key=lambda p : to_polar(center, p)[::-1])
+        print([(p.x, p.y) for p in points])
         draw_path(vsk, points, self.closed)
 
         for _ in range(self.iterations):
