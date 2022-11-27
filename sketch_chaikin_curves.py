@@ -68,8 +68,8 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
             points.append(points[0])
 
     def lerp_points(self, p0, p1, pct):
-        x = round(p0.x * pct + p1.x * (1 - pct), self.precision)
-        y = round(p0.y * pct + p1.y * (1 - pct), self.precision)
+        x = round(p0.x * (1 - pct) + p1.x * pct, self.precision)
+        y = round(p0.y * (1 - pct) + p1.y * pct, self.precision)
         return Point(x, y)
 
     def draw_path(self, vsk: vsketch.Vsketch, points):
@@ -98,7 +98,6 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
         points = self.generate_points(vsk)
         if self.debug:
             vsk.circle(self.origin.x, self.origin.y, 20)
-            print([(p.x, p.y) for p in points])
         if not self.only_draw_last:
             self.draw_path(vsk, points)
 
@@ -106,10 +105,10 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
             new_points = []
             p0 = points[0]
             for p in points[1:]:
-                lerp1 = self.lerp_points(p0, p, 0.75)
+                lerp1 = self.lerp_points(p0, p, 0.25)
                 if len(new_points) == 0 or lerp1 != new_points[-1]:
                     new_points.append(lerp1)
-                lerp2 = self.lerp_points(p0, p, 0.25)
+                lerp2 = self.lerp_points(p0, p, 0.75)
                 if lerp2 != new_points[-1]:
                     new_points.append(lerp2)
                 p0 = p
