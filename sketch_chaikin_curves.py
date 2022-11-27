@@ -118,6 +118,8 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
                 self.draw_path(vsk, points)
 
             points = new_points
+            if self.closed:
+                points.append(points[0])
             if self.always_resort:
                 self.sort_points(points)
 
