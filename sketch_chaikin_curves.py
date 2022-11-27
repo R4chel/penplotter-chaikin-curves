@@ -8,12 +8,10 @@ def to_cartesian(r, theta):
 
 
 
-def to_polar(center, p):
-    r = p.distance(center)
-    theta = math.acos((p.x-center.x)/r)
+def to_polar(origin, p):
+    r = p.distance(origin)
+    theta = math.acos((p.x-origin.x)/r)
     return (r, theta)
-
-
 
 class ChaikinCurvesSketch(vsketch.SketchClass):
     # Sketch parameters:
@@ -25,11 +23,24 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
     always_resort = vsketch.Param(False)
     precision = vsketch.Param(3)
 
+    def generate_points(self, vsk: vsketch.Vsketch):
+        points = []
+        if self.closed:
+            thetas = [vsk.random(2*math.pi) for _ in range(self.num_points)]
+            thetas.sort()
+            # This only works if origin = center of page
+            polar_points = [(vsk.random(max(-self.width/(2*abs(math.cos(theta))),-self.height/(2*abs(math.sin(theta)))), min(self.width/(2*abs(math.cos(theta))),self.height/(2*abs(math.sin(theta))))), theta) for theta in thetas]
+            points = [Point(r * math.cos(theta) + self.origin.x, r * math.sin(theta) + self.origin.y) for (r, theta) in polar_points]
+        else:
+            xs = [round(vsk.random(self.width),self.precision) for _ in range(self.num_points)]
+            xs.sort()
+            points = [Point(x, vsk.random(self.height))for x in xs]
+        return [Point(round(point.x, self.precision), round(point.y, self.precision)) for point in points]
+
     def sort_points(self, points):
         if self.closed:
-            self.center = Point(sum([p.x for p in points])/len(points), sum([p.y for p in points])/len(points))
-        # center = Point(self.width/2,self.height/2)
-            points.sort(key = lambda p : to_polar(self.center, p)[::-1])
+            # self.center = Point(sum([p.x for p in points])/len(points), sum([p.y for p in points])/len(points))
+            points.sort(key = lambda p : to_polar(self.origin, p)[::-1])
         else:
             points.sort(key = lambda p : ( p.x, p.y ))
         if self.closed and points[-1] != points[0]:
@@ -62,11 +73,11 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
         vsk.scale(scale)
         factor = 1 / vp.convert_length(scale)
         self.width, self.height = factor * vsk.width, factor * vsk.height
+        self.origin = Point(self.width/2, self.height/2)
 
-        points = [Point(vsk.random(self.width), vsk.random(self.height)) for _ in range(self.num_points)]
-        self.sort_points(points)
+        points = self.generate_points(vsk)
         if self.debug:
-            vsk.circle(center.x,center.y, 20)
+            vsk.circle(self.origin.x,self.origin.y, 20)
             print([(p.x, p.y) for p in points])
         if not self.only_draw_last:
             self.draw_path(vsk, points)
