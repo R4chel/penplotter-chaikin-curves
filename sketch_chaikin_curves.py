@@ -92,13 +92,13 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
             new_points = []
             p0 = points[0]
             for p in points[1:]:
-                lerp1 = self.lerp_points(p0, p, 0.25)
-                if len(new_points) == 0 or lerp1 != new_points[-1]:
-                    new_points.append(lerp1)
-                lerp2 = self.lerp_points(p0, p, 0.75)
-                if lerp2 != new_points[-1]:
+                lerp1 = self.lerp_points(p0, p, 0.75)
+                # if len(new_points) == 0 or lerp1 != new_points[-1]:
+                new_points.append(lerp1)
+                lerp2 = self.lerp_points(p0, p, 0.25)
+                # if lerp2 != new_points[-1]:
                     
-                    new_points.append(lerp2)
+                new_points.append(lerp2)
                 p0 = p
             
             if not self.only_draw_last:
