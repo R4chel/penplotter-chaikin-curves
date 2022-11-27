@@ -31,6 +31,7 @@ class ChaikinCurvesSketch(vsketch.SketchClass):
             # This only works if origin = center of page
             polar_points = [(vsk.random(0, min(abs(self.width/(2*math.cos(theta))),abs(self.height/(2*math.sin(theta))))), theta) for theta in thetas]
             points = [Point(r * math.cos(theta) + self.origin.x, r * math.sin(theta) + self.origin.y) for (r, theta) in polar_points]
+            points.append(points[0])
             if self.debug:
                 vsk.stroke(2)
                 for p in points:
